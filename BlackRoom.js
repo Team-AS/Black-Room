@@ -1,4 +1,3 @@
-
 /**
 
 Black Room script
@@ -7,7 +6,6 @@ Copyright (c) Duduzzing
 All rights deserved
 
 */
-
 
 var SDCARD = android.os.Environment.getExternalStorageDirectory();
 
@@ -19,9 +17,7 @@ var screenWidth = CTX.getWindowManager().getDefaultDisplay().getWidth();
 
 var screenHeight = CTX.getWindowManager().getDefaultDisplay().getHeight();
 
-
 var FONT_PATH = SDCARD + "/Duduzzing/Survival-Kit/minecraft.ttf";
-
 
 var Bitmap = android.graphics.Bitmap;
 
@@ -49,8 +45,6 @@ var TextView = android.widget.TextView;
 
 var View = android.view.View;
 
-
-
 var gui = {};
 
 /**
@@ -66,10 +60,7 @@ gui.ninepatch = function(file) {
 
 };
 
-
-
 var blackRoom = {};
-
 
 /**
 String name
@@ -84,8 +75,6 @@ blackRoom.getFaceByName = function(name) {
 
 };
 
-
-
 /**
 Show the error in clientMessage
 use in try-catch
@@ -96,8 +85,6 @@ blackRoom.error = function(e) {
   clientMessage(ChatColor.RED + "<error> " + e + "\nline : " + e.lineNumber);
 
 };
-
-
 
 /**
 
@@ -121,8 +108,6 @@ blackRoom.vibrate = function(milliSec) {
   }));
 
 };
-
-
 
 /**
 
@@ -149,8 +134,6 @@ blackRoom.prepareChat = function() {
   return talkWindow;
 
 }
-
-
 
 /**
 
@@ -183,12 +166,11 @@ int count
 blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doVibrate, endFunc, count) {
 
   try {
-  	 
-  	 var letter = message[count].split("");
-  	 
-  	 var currentChat = letter[0];
-  	 
-  	 var letterCount = 0;
+
+    var letter = message[count].split("");
+    var currentChat = letter[0];
+    var letterCount = 0;
+    var isChatOver = false;
 
     var talkLayout = talkWin.getContentView();
 
@@ -204,6 +186,7 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
 
     screen.setBackgroundDrawable(new Drawable.ColorDrawable(Color.RED
     /*TRANSPARENT*/
+
     ));
 
     screen.setShadowLayer(1 / Math.pow(10, 10), 4, 4, Color.parseColor("#424142"));
@@ -251,44 +234,55 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
 
     }
 
-    var isChatOver = false;
+    //어... 다른 쓰레드에서 셋 텍스트하면 오류가... 
 
+    new java.lang.Thread(new java.lang.Runnable({
+      run: function() {
 
-//어... 다른 쓰레드에서 셋 텍스트하면 오류가... 
-    
-  new java.lang.Thread(new java.lang.Runnable({run: function(){
-    	
-    	try {
-    	    	
-    while(isChatOver == false && letterCount < letter.length-1){
-    
-    java.lang.Thread.sleep(200);
-    	
-   	 letterCount++;
-    
-    currentChat += letter[letterCount];
-    
-    screen.setText(currentChat);
-                    	
-    }
-    } catch (e) {
-    	  blackRoom.error (e);    	
-    }
-    }
+        try {
+
+          while (isChatOver == false && letterCount < letter.length - 1) {
+
+            java.lang.Thread.sleep(50);
+
+            letterCount++;
+
+            currentChat += letter[letterCount];
+
+            CTX.runOnUiThread(new java.lang.Runnable({
+              run: function() {
+
+                screen.setText(currentChat);
+              }
+            }));
+
+            if (letterCount == letter.length - 1) {
+
+              isChatOver = true;
+
+            }
+
+          }
+
+        } catch(e) {
+          blackRoom.error(e);
+        }
+
+      }
     })).start();
-    
+
     screen.setOnClickListener(new View.OnClickListener({
       onClick: function(viewarg) {
         try {
 
           isChatOver = true;
-          
+
           screen.setText(message[count]);
 
           if (endFunc[count] != null) {
-            
+
             endFunc[count]();
-            
+
           }
 
           count++;
@@ -303,6 +297,8 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
             ModPE.setGameSpeed(20);
 
             talkWin.dismiss();
+
+            isChatOver = false;
 
           }
 
@@ -319,18 +315,16 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
 
 };
 
-
-
 function useItem(x, y, z, I, b) {
   try {
 
-    var message = ["안녕 난 스티브야", "뭐", "팍 씨", "퉷"];
+    var message = ["안녕 난 스티브야", "뭐 왜 뭘봐", "Most numbers typed in fail the test immediately, as most are not primes, and there is no problem with the response of the App. Likewise for small prime numbers, such as the eggshell number 77345993. (Why eggshell? Well if that number is typed into a desktop calculator with a Liquid Crystal Display, LCD, and the calculator is turned upside down then it sort of reads EGGSHELL.)\nNow try a really big prime number, a web search will reveal plenty, how about nineteen ones, 1111111111111111111, strangely this is a prime number. Notice that it takes a few seconds for the routine to determine that it is a prime number. If we add tv.setText(“Checking please wait.”) at the beginning of the CheckPrimeClick we get the same problem as our sleep example. The UI update is blocked by the looping code.", "(동공지진)"];
 
     var cha = ["steve", "Slime", "steve", "Slime"];
 
-    var point = [20, 25, 30, 25];
+    var point = [20, 25, 10, 25];
 
-    var doVibrate = [false, false, false, false];
+    var doVibrate = [false, false, false, true];
 
     var isLeft = [true, false, true, false];
 
@@ -363,6 +357,24 @@ function useItem(x, y, z, I, b) {
     blackRoom.error(e);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
