@@ -21,7 +21,7 @@ var screenWidth = Math.max( tempScreenWidth, tempScreenHeight);
 
 var screenHeight = Math.min( tempScreenWidth, tempScreenHeight);
 
-var FONT_PATH = SDCARD + "/Duduzzing/Survival-Kit/minecraft.ttf";
+var FONT_PATH = SDCARD + "/Team-AS/Black-Room/minecraft.ttf"
 
 var Bitmap = android.graphics.Bitmap;
 
@@ -165,8 +165,22 @@ blackRoom.download = function(url, path) {
             }
           }
         }));
-
-        blackRoom.message(file.getName() + " download finished");
+        
+        
+	 CTX.runOnUiThread(new java.lang.Runnable( {
+		run: function(){
+			try{    
+        var dialog = new android.app.AlertDialog.Builder(CTX);
+        dialog.setTitle("<Black Room> " +file.getName() + " 다운로드 완료" );	        
+		     dialog.setNegativeButton("나가기", null); 
+		     dialog.create();
+		     dialog.show();
+		     
+		     } catch(e) {
+        print(e);        
+      }
+      }}));
+               
       } catch(e) {
         print(e);
         blackRoom.error(e);
@@ -174,6 +188,20 @@ blackRoom.download = function(url, path) {
     }
   })).start();
 };
+
+
+
+
+blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/Zombie.png" ,"/Team-AS/Black-Room/Zombie.png");
+
+blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/Skeleton.png" ,"/Team-AS/Black-Room/Skeleton.png");
+
+blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/minecraft.ttf","/Team-AS/Black-Room/minecraft.ttf");
+
+
+
+
+
 
 /**
 String name
@@ -183,7 +211,7 @@ return bitmap
 */
 
 blackRoom.getFaceByName = function(name) {
-  var path = SDCARD + "/Download/몹/" + name + ".png";
+  var path = SDCARD + "/Team-AS/Black-Room/" + name + ".png";
 
   if (java.io.File(path).exists()) {
 
@@ -579,11 +607,11 @@ function useItem(x, y, z, I, b) {
 
     var message = ["안녕 난 스티브야", "뭐 왜 뭘봐", "Most numbers typed in fail the test immediately, as most are not primes, and there is no problem with the response of the App. Likewise for small prime numbers, such as the eggshell number 77345993. (Why eggshell? Well if that number is typed into a desktop calculator with a Liquid Crystal Display, LCD, and the calculator is turned upside down then it sort of reads EGGSHELL.)\nNow try a really big prime number, a web search will reveal plenty, how about nineteen ones, 1111111111111111111, strangely this is a prime number. Notice that it takes a few seconds for the routine to determine that it is a prime number. If we add tv.setText(“Checking please wait.”) at the beginning of the CheckPrimeClick we get the same problem as our sleep example. The UI update is blocked by the looping code.", "(동공지진)"];
 
-    var cha = ["steve", "Slime", "steve", "Slime"];
+    var cha = ["Skeleton", "Zombie", "Skeleton", "Zombie"];
 
     var point = [20, 25, 16, 25];
 
-    var doVibrate = [false, false, false, false];
+    var doVibrate = [false, false, false, true];
 
     var isLeft = [true, false, true, false];
 
@@ -617,9 +645,6 @@ function useItem(x, y, z, I, b) {
   }
 
 }
-//blackRoom.download("https://raw.githubusercontent.com/Duduzzing/MCPE-ModPE-Script/master/Survival-Kit/resource/chest.png", "/chest.png");
-
-
 
 
 
