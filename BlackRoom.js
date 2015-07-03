@@ -1,11 +1,11 @@
+
 /**
-
-Black Room script
-
-Copyright (c) Duduzzing 
-All rights deserved
-
-*/
+ * Black Room script
+ * 
+ * Copyright (c) Duduzzing
+ * All rights deserved
+ * 
+ */
 
 var SDCARD = android.os.Environment.getExternalStorageDirectory();
 
@@ -61,10 +61,15 @@ var spritesheet = new BitmapFactory.decodeStream(peAssets.open("images/gui/sprit
 var gui = {};
 
 /**
-thk affogatoman
-
-return drawable
-*/
+ * Ninepactch image
+ * 
+ * String file
+ * -the path
+ * 
+ *thk affogatoman
+ * 
+ *return drawable
+ */
 
 gui.ninepatch = function(file) {
   var br = new java.io.BufferedInputStream(new java.io.FileInputStream(new java.io.File(SDCARD, file)));
@@ -75,14 +80,13 @@ gui.ninepatch = function(file) {
 
 var blackRoom = {};
 
+
 /**
-
-ClientMessage for BlackRoom script
-
-String message
--may not be string though
-
-*/
+ * ClientMessage for BlackRoom script
+ * 
+ * String message
+ * -may not be string though
+ */
 
 blackRoom.message = function(message) {
 
@@ -90,6 +94,17 @@ blackRoom.message = function(message) {
 
 };
 
+
+/**
+ * Download file from internet
+ * 
+ * String url
+ * -the url that contains file to download
+ * 
+ * String path
+ * -the path to download file (sdcard path included already)
+ */
+ 
 blackRoom.download = function(url, path) {
   new java.lang.Thread(new java.lang.Runnable({
     run: function() {
@@ -129,7 +144,6 @@ blackRoom.download = function(url, path) {
               downloadDialog.setCancelable(true);
               downloadDialog.show();
             } catch(e) {
-              print(e);
               blackRoom.error(e);
             }
 
@@ -160,7 +174,6 @@ blackRoom.download = function(url, path) {
             try {
               downloadDialog.dismiss();
             } catch(e) {
-              print(e);
               blackRoom.error(e);
             }
           }
@@ -177,12 +190,11 @@ blackRoom.download = function(url, path) {
 		     dialog.show();
 		     
 		     } catch(e) {
-        print(e);        
+        blackRoom.error(e);        
       }
       }}));
                
       } catch(e) {
-        print(e);
         blackRoom.error(e);
       }
     }
@@ -204,11 +216,13 @@ blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master
 
 
 /**
-String name
--the character's name
-
-return bitmap
-*/
+ * Get the face bitmap for chatting by name
+ * 
+ * String name
+ * -the character's name
+ * 
+ * return bitmap
+ */
 
 blackRoom.getFaceByName = function(name) {
   var path = SDCARD + "/Team-AS/Black-Room/" + name + ".png";
@@ -226,9 +240,9 @@ blackRoom.getFaceByName = function(name) {
 };
 
 /**
-Show the error in a dialog
-use in try-catch
-*/
+ * Show the error in a dialog
+ * use in try-catch
+ */
 
 blackRoom.error = function(e) {
 	 
@@ -268,11 +282,11 @@ blackRoom.error = function(e) {
 };
 
 /**
-
-int howLong
--set how long will it vibrate in millisecond
-
-*/
+ * Vibrate phone
+ * 
+ * int howLong
+ * -set how long will it vibrate in millisecond
+ */
 
 blackRoom.vibrate = function(howLong) {
 
