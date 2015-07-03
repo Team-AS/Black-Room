@@ -2,7 +2,7 @@
 /**
  * Black Room script
  * 
- * Copyright (c) Duduzzing
+ * Copyright © Duduzzing
  * All rights deserved
  * 
  */
@@ -304,18 +304,55 @@ blackRoom.vibrate = function(howLong) {
 
 };
 
+
 /**
+ * Vibrate screen
+ * (testing)
+ * 
+ * int howLong
+ * -set how long will the screen shake
+ * 
+ */
 
-Prepare PopupWindow for chat
+blackRoom.screenVibrate = function(howlong) {
+  
+  var player = Player.getEntity();
+  
+  var time = new Date().getTime();
+  
+  new java.lang.Thread( new java.lang.Runnable( { run: function()){
+  
+    while(true){
+      Entity.setVelX(player, 0.2);
+      Entity.setVelZ(player, 0.2);
+      Entity.setVelX(player, -0.2);
+      Entity.setVelZ(player, -0.2);
+      Entity.setVelX(player, -0.2);
+      Entity.setVelX(player, 0.2);
+      Entity.setVelZ(player, 0.2);
+      Entity.setVelX(player, -0.2);
+      
+      if(new Date().getTime() - time > howLong) {
+      	break;
+      }
+      
+    }
+ 
+  }})).start();
+  
+};
 
-return PopupWindow (obj)
-
-*/
+/**
+ * Prepare PopupWindows for chat
+ * 
+ * return PopupWindow (obj)
+ */
 
 blackRoom.prepareChat = function() {
 
 try{
-
+  
+  //this speed should be 0, but 10 for just now
   ModPE.setGameSpeed(10);
   
  var imageView1 = new ImageView(CTX);
@@ -331,7 +368,6 @@ try{
   personWindow2.setBackgroundDrawable(new Drawable.ColorDrawable(Color.TRANSPARENT));
 
   personWindow2.showAtLocation(CTX.getWindow().getDecorView(), Gravity.RIGHT | Gravity.CENTER, 0, 0);
- 
   
   var nameBitmap = BitmapFactory.decodeFile(SDCARD+"/Download/talking_name.9.png");
   
@@ -365,7 +401,6 @@ try{
   nameWindow2.setBackgroundDrawable(new Drawable.ColorDrawable(Color.TRANSPARENT));
   
   nameWindow2.showAtLocation(CTX.getWindow().getDecorView(), Gravity.RIGHT | Gravity.CENTER, 0, 70);
-
 
   var screen = new Button(CTX);
   
@@ -406,38 +441,36 @@ try{
   blackRoom.error(e);	
 	
 }
-}
+};
 
 /**
-
-the Chatting function
-
-Object talkWin
--prepareChat
-
-String[] character
--defines which character is speaking
-
-Sring[] message
--the talking
-
-Int[] point
--font size
-
-Bool[] doVibrate
--true = virate when talk
-
-Bool[] isLeft
--true = face is on the left side
-
-function[]/null endFunc
--function that execute when the talking is done
-
-int count
--the index for each arries
--put 0 when it's beginning of chat
-
-*/
+ * The Chatting function
+ * 
+ * Object talkWin
+ * -prepareChat
+ * 
+ * String[] character
+ * -defines which character is speaking (name)
+ * 
+ * Sring[] message
+ * -the talking
+ * 
+ * Int[] point
+ * -font size
+ * 
+ * Bool[] doVibrate
+ * -true = virate when talk
+ * 
+ * Bool[] isLeft
+ * -true = face is on the left side
+ * 
+ * function[]/null endFunc
+ * -function that execute when the talking is done
+ * 
+ * int count
+ * -the index for each arries
+ * -put 0 when it's the beginning of chat
+ */
 
 blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doVibrate, endFunc, count) {
 
@@ -619,7 +652,7 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
 function useItem(x, y, z, I, b) {
   try {
 
-    var message = ["안녕 난 스티브야", "뭐 왜 뭘봐", "Most numbers typed in fail the test immediately, as most are not primes, and there is no problem with the response of the App. Likewise for small prime numbers, such as the eggshell number 77345993. (Why eggshell? Well if that number is typed into a desktop calculator with a Liquid Crystal Display, LCD, and the calculator is turned upside down then it sort of reads EGGSHELL.)\nNow try a really big prime number, a web search will reveal plenty, how about nineteen ones, 1111111111111111111, strangely this is a prime number. Notice that it takes a few seconds for the routine to determine that it is a prime number. If we add tv.setText(“Checking please wait.”) at the beginning of the CheckPrimeClick we get the same problem as our sleep example. The UI update is blocked by the looping code.", "(동공지진)"];
+    var message = ["안녕 난 스켈레톤이야", "뭐 왜 뭘봐", "Most numbers typed in fail the test immediately, as most are not primes, and there is no problem with the response of the App. Likewise for small prime numbers, such as the eggshell number 77345993. (Why eggshell? Well if that number is typed into a desktop calculator with a Liquid Crystal Display, LCD, and the calculator is turned upside down then it sort of reads EGGSHELL.)\nNow try a really big prime number, a web search will reveal plenty, how about nineteen ones, 1111111111111111111, strangely this is a prime number. Notice that it takes a few seconds for the routine to determine that it is a prime number. If we add tv.setText(“Checking please wait.”) at the beginning of the CheckPrimeClick we get the same problem as our sleep example. The UI update is blocked by the looping code.", "(동공지진)"];
 
     var cha = ["Skeleton", "Zombie", "Skeleton", "Zombie"];
 
