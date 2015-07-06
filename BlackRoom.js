@@ -60,7 +60,7 @@ var spritesheet = new BitmapFactory.decodeStream(peAssets.open("images/gui/sprit
 
 var gui = {};
 
-
+//임시로 일단 만든 픽셀조정 함수
 function dp(d){
 	
 return d;	
@@ -212,12 +212,13 @@ blackRoom.download = function(url, path) {
 
 
 
-blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/Zombie.png" ,"/Team-AS/Black-Room/Zombie.png");
+blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/Zombie.png" ,"/Team-AS/Black-Room/Alex.png");
 
-blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/Skeleton.png" ,"/Team-AS/Black-Room/Skeleton.png");
+blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/Skeleton.png" ,"/Team-AS/Black-Room/Steve.png");
 
 blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/minecraft.ttf","/Team-AS/Black-Room/minecraft.ttf");
 
+blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/talking.9.png","/Team-AS/Black-Room/talking.9.png");
 
 
 
@@ -375,80 +376,11 @@ blackRoom.screenVibrate = function(howLong) {
 
 try{
 
-
-  var time = new Date().getTime();
-  
-  new java.lang.Thread( new java.lang.Runnable( { run: function(){
-
-try{  
-    while(true){
-    	  
-var params = CTX.getWindow().getAttributes();  
-
-params.width = Math.round(Math.random())? 1014: 1004;   
-params.height = Math.round(Math.random())? 690: 680;
-
-	clientMessage("runnning\nwid: "+params.width+" hei: "+params.height);
-
-    CTX.runOnUiThread(new java.lang.Runnable({
-      run: function() {
-  
-CTX.getWindow().setAttributes(params);  
-
-}}));
-  
-        
-if(new Date().getTime() - time > howLong) {
-	clientMessage("함수탈출");
-var param = CTX.getWindow().getAttributes();  
-
-param.width = 1124 //screenWidth;   
-param.height = 800//screenHeight;
-
- 
-    CTX.runOnUiThread(new java.lang.Runnable({
-      run: function() {
-  
-CTX.getWindow().setAttributes(param);  
-
-}})); 	
-      	break;
-      }
-      
-      java.lang.Thread.sleep(100);
-    }
-
-} catch(e) {
-	
-  blackRoom.error(e);	
-	
-}
- 
-  }})).start();        
-
-        
-        
-/*
-
-
-CTX.runOnUiThread(new java.lang.Runnable({
-    run: function() {
-    	
-try{
-
-*/
             
 //var view = CTX.getWindow().getDecorView().findViewById(android.R.id.content);
 
 //var view = CTX.getWindow().getDecorView().getRootView()
 
-/*
-var shake = new android.view.Animation.AnimationUtils.loadAnimation(CTX, android.R.anim.shake);
-    
-    view.startAnimation(shake);
-
-
-*/
 
 /*
 
@@ -471,41 +403,28 @@ view.startAnimation(alphaAnimation);
 
 */
 
-
-/*
-
-} catch (e) {
-blackRoom.error(e);	
-}
-
-*/
- 
-//  }}));   
-
-/*
     	  
   var player = Player.getEntity();
   
   var time = new Date().getTime();
   
+  var yaw = Entity.getYaw(player);
+  var pitch = Entity.getPitch(player);
+  
   new java.lang.Thread( new java.lang.Runnable( { run: function(){
   try{
+ 
     while(true){
-    	   
-    	 Entity.setVelX(player,0.2);
-    
-    	 Entity.setVelX(player,-1);    	        	    
-//    	 Entity.setVelZ(player,-0.4);    	     	    
-//     	Entity.setVelZ(player,0.2);
-    	    	  
-     // Entity.setRot(player, 340, -10);
-    //  Entity.setRot(player, 20, 10);
+      
+      var rand1 = Math.floor(Math.random()*20)-10;	
+      var rand2 = Math.floor(Math.random()*20)-10;	
+	    	  
+     Entity.setRot(player,yaw+rand1,pitch+rand2);
+     java.lang.Thread.sleep(50);
       
       if(new Date().getTime() - time > howLong) {
       	break;
       }
-      
-      java.lang.Thread.sleep(100);
     }
     } catch (e) {
 blackRoom.error(e);	
@@ -514,14 +433,11 @@ blackRoom.error(e);
  
   }})).start();
 
-*/
-
 
 } catch (e) {
 blackRoom.error(e);	
 }
 
-//}}));
 
 };
 
@@ -552,14 +468,12 @@ try{
 
   personWindow2.showAtLocation(CTX.getWindow().getDecorView(), Gravity.RIGHT | Gravity.CENTER, 0, -(dp(60)));
   
-  var nameBitmap = BitmapFactory.decodeFile(SDCARD+"/Download/talking_name.9.png");
-  
-  var nWid = nameBitmap.getWidth();
-  var nHei = nameBitmap.getHeight();
+  var nWid = dp(200);
+  var nHei = dp(60);
 
   var name1 = new Button(CTX);
   
-  name1.setTextSize(20);
+  name1.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,20);
   
   name1.setTextColor(Color.BLACK);
 
@@ -573,7 +487,7 @@ try{
 
   var name2 = new Button(CTX);
   
-  name2.setTextSize(20)
+  name2.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,20)
   
   name2.setTextColor(Color.BLACK);
 
@@ -594,17 +508,14 @@ try{
 
   var talkWindow = new PopupWindow(screen,screenWidth, screenHeight / 3);
 
-  talkWindow.setBackgroundDrawable(gui.ninepatch("/Download/talking.9.png"));
+  talkWindow.setBackgroundDrawable(gui.ninepatch("/Team-AS/Black-Room/talking.9.png"));
 
   talkWindow.showAtLocation(CTX.getWindow().getDecorView(), Gravity.CENTER | Gravity.BOTTOM, 0, 0);
 
   
   var arrowBitmap = new Bitmap.createScaledBitmap( new Bitmap.createBitmap(spritesheet,38,11,8,4), 32, 14, false);
   
-  var b  = new Button(CTX);
-
-  
- // b.setBackgroundDrawable(new Drawable.ColorDrawable(Color.WHITE));
+ var b  = new Button(CTX);
 
  b.setBackgroundDrawable(new Drawable.BitmapDrawable(arrowBitmap));
 
@@ -848,7 +759,7 @@ function useItem(x, y, z, I, b) {
   if(I==257){  
   try {
 
-    var message = ["안녕 난 스티브야", "뭐 왜 뭘봐", "Most numbers typed in fail the test immediately, as most are not primes, and there is no problem with the response of the App. Likewise for small prime numbers, such as the eggshell number 77345993. (Why eggshell? Well if that number is typed into a desktop calculator with a Liquid Crystal Display, LCD, and the calculator is turned upside down then it sort of reads EGGSHELL.)\nNow try a really big prime number, a web search will reveal plenty, how about nineteen ones, 1111111111111111111, strangely this is a prime number. Notice that it takes a few seconds for the routine to determine that it is a prime number. If we add tv.setText(“Checking please wait.”) at the beginning of the CheckPrimeClick we get the same problem as our sleep example. The UI update is blocked by the looping code.", "(동공지진)"];
+    var message = ["안녕 난 스티브야", "뭐 왜 뭘봐", "Lopadotemachoselachogaleokranioleipsanodrimhypotrimmatosilphioparaomelitokatakechymenokichlepikossyphophattoperisteralektryonoptekephalliokigklopeleiolagoiosiraiobaphetraganopterygon", "(동공지진)"];
 
     var cha = ["Steve", "Alex", "Steve", "Alex"];
 
@@ -864,7 +775,7 @@ function useItem(x, y, z, I, b) {
 
     null, null, function() {
       
-      clientMessage("&");
+      clientMessage("WASSUP?");
     },
     null
 
@@ -897,24 +808,7 @@ if(I==259){
 blackRoom.screenDim(1.0);
   } 
 if(I==260){
-	
-var a =0;
-
-new java.lang.Thread(new java.lang.Runnable({run:function(){
-
-while(a<20){
-
 blackRoom.setBrightness(0.1);
-
-java.lang.Thread.sleep(100);
-
-blackRoom.setBrightness(1.0);
-a++;
-
-}
-
-}})).start();
-
 }   
   
      
