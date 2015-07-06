@@ -60,6 +60,14 @@ var spritesheet = new BitmapFactory.decodeStream(peAssets.open("images/gui/sprit
 
 var gui = {};
 
+
+function dp(d){
+	
+return d;	
+	
+}
+
+
 /**
  * Ninepactch image
  * 
@@ -281,6 +289,55 @@ blackRoom.error = function(e) {
     }}));
 };
 
+
+
+
+/**
+ * Set the dim amount of screen
+ *
+ * float howMuch
+ * -dark(0.1) ~ bright(1.0)
+ *
+ */ 
+
+blackRoom.screenDim = function(howMuch){
+	
+    	  var params = CTX.getWindow().getAttributes();  
+
+params.alpha = howMuch;
+
+CTX.runOnUiThread(new java.lang.Runnable({
+      run: function() {
+  
+CTX.getWindow().setAttributes(params);  
+
+}}));
+
+};
+
+/**
+ * Set the brightness of screen
+ *
+ * float howMuch
+ * -dark(0.1) ~ bright(1.0)
+ *
+ */
+ 
+blackRoom.setBrightness = function(howMuch){
+	
+var params = CTX.getWindow().getAttributes();  
+
+params.screenBrightness = howMuch;
+
+CTX.runOnUiThread(new java.lang.Runnable({
+      run: function() {
+  
+CTX.getWindow().setAttributes(params);  
+
+}}));
+
+};
+
 /**
  * Vibrate phone
  * 
@@ -314,32 +371,158 @@ blackRoom.vibrate = function(howLong) {
  * 
  */
 
-blackRoom.screenVibrate = function(howlong) {
+blackRoom.screenVibrate = function(howLong) {
+
+try{
+
+
+  var time = new Date().getTime();
   
+  new java.lang.Thread( new java.lang.Runnable( { run: function(){
+
+try{  
+    while(true){
+    	  
+var params = CTX.getWindow().getAttributes();  
+
+params.width = Math.round(Math.random())? 1014: 1004;   
+params.height = Math.round(Math.random())? 690: 680;
+
+	clientMessage("runnning\nwid: "+params.width+" hei: "+params.height);
+
+    CTX.runOnUiThread(new java.lang.Runnable({
+      run: function() {
+  
+CTX.getWindow().setAttributes(params);  
+
+}}));
+  
+        
+if(new Date().getTime() - time > howLong) {
+	clientMessage("함수탈출");
+var param = CTX.getWindow().getAttributes();  
+
+param.width = 1124 //screenWidth;   
+param.height = 800//screenHeight;
+
+ 
+    CTX.runOnUiThread(new java.lang.Runnable({
+      run: function() {
+  
+CTX.getWindow().setAttributes(param);  
+
+}})); 	
+      	break;
+      }
+      
+      java.lang.Thread.sleep(100);
+    }
+
+} catch(e) {
+	
+  blackRoom.error(e);	
+	
+}
+ 
+  }})).start();        
+
+        
+        
+/*
+
+
+CTX.runOnUiThread(new java.lang.Runnable({
+    run: function() {
+    	
+try{
+
+*/
+            
+//var view = CTX.getWindow().getDecorView().findViewById(android.R.id.content);
+
+//var view = CTX.getWindow().getDecorView().getRootView()
+
+/*
+var shake = new android.view.Animation.AnimationUtils.loadAnimation(CTX, android.R.anim.shake);
+    
+    view.startAnimation(shake);
+
+
+*/
+
+/*
+
+var Animation = android.view.animation.Animation;
+
+//var alphaAnimation = android.view.animation.AlphaAnimation(0.1,1.0);
+
+var alphaAnimation = new android.view.animation.TranslateAnimation(0, 0, 50, 50);  
+
+
+alphaAnimation.setDuration(howLong);  
+
+alphaAnimation.setRepeatCount(Animation.INFINITE);  
+
+alphaAnimation.setRepeatMode(Animation.REVERSE);  
+
+view.startAnimation(alphaAnimation);  
+  
+
+
+*/
+
+
+/*
+
+} catch (e) {
+blackRoom.error(e);	
+}
+
+*/
+ 
+//  }}));   
+
+/*
+    	  
   var player = Player.getEntity();
   
   var time = new Date().getTime();
   
-  new java.lang.Thread( new java.lang.Runnable( { run: function()){
-  
+  new java.lang.Thread( new java.lang.Runnable( { run: function(){
+  try{
     while(true){
-      Entity.setVelX(player, 0.2);
-      Entity.setVelZ(player, 0.2);
-      Entity.setVelX(player, -0.2);
-      Entity.setVelZ(player, -0.2);
-      Entity.setVelX(player, -0.2);
-      Entity.setVelX(player, 0.2);
-      Entity.setVelZ(player, 0.2);
-      Entity.setVelX(player, -0.2);
+    	   
+    	 Entity.setVelX(player,0.2);
+    
+    	 Entity.setVelX(player,-1);    	        	    
+//    	 Entity.setVelZ(player,-0.4);    	     	    
+//     	Entity.setVelZ(player,0.2);
+    	    	  
+     // Entity.setRot(player, 340, -10);
+    //  Entity.setRot(player, 20, 10);
       
       if(new Date().getTime() - time > howLong) {
       	break;
       }
       
+      java.lang.Thread.sleep(100);
     }
+    } catch (e) {
+blackRoom.error(e);	
+}
+
  
   }})).start();
-  
+
+*/
+
+
+} catch (e) {
+blackRoom.error(e);	
+}
+
+//}}));
+
 };
 
 /**
@@ -354,20 +537,20 @@ try{
   
   //this speed should be 0, but 10 for just now
   ModPE.setGameSpeed(10);
-  
+    
  var imageView1 = new ImageView(CTX);
 
-  var personWindow1 = new PopupWindow(imageView1, screenWidth / 4, screenHeight / 2);
+  var personWindow1 = new PopupWindow(imageView1, dp(260), dp(350) );
   personWindow1.setBackgroundDrawable(new Drawable.ColorDrawable(Color.TRANSPARENT));
 
-  personWindow1.showAtLocation(CTX.getWindow().getDecorView(), Gravity.LEFT | Gravity.CENTER, 0, 0);
+  personWindow1.showAtLocation(CTX.getWindow().getDecorView(), Gravity.LEFT | Gravity.CENTER, 0, -(dp(60)));
 
   var imageView2 = new ImageView(CTX);
 
-  var personWindow2 = new PopupWindow(imageView2, screenWidth / 4, screenHeight / 2);
+  var personWindow2 = new PopupWindow(imageView2, dp(260), dp(350));
   personWindow2.setBackgroundDrawable(new Drawable.ColorDrawable(Color.TRANSPARENT));
 
-  personWindow2.showAtLocation(CTX.getWindow().getDecorView(), Gravity.RIGHT | Gravity.CENTER, 0, 0);
+  personWindow2.showAtLocation(CTX.getWindow().getDecorView(), Gravity.RIGHT | Gravity.CENTER, 0, -(dp(60)));
   
   var nameBitmap = BitmapFactory.decodeFile(SDCARD+"/Download/talking_name.9.png");
   
@@ -386,7 +569,7 @@ try{
   
   nameWindow1.setBackgroundDrawable(new Drawable.ColorDrawable(Color.TRANSPARENT));
   
-  nameWindow1.showAtLocation(CTX.getWindow().getDecorView(), Gravity.LEFT | Gravity.CENTER, 0, 70);
+  nameWindow1.showAtLocation(CTX.getWindow().getDecorView(), Gravity.LEFT | Gravity.CENTER, 0, dp(70));
 
   var name2 = new Button(CTX);
   
@@ -400,11 +583,14 @@ try{
   
   nameWindow2.setBackgroundDrawable(new Drawable.ColorDrawable(Color.TRANSPARENT));
   
-  nameWindow2.showAtLocation(CTX.getWindow().getDecorView(), Gravity.RIGHT | Gravity.CENTER, 0, 70);
+  nameWindow2.showAtLocation(CTX.getWindow().getDecorView(), Gravity.RIGHT | Gravity.CENTER, 0, dp(70));
 
   var screen = new Button(CTX);
   
   screen.setBackgroundDrawable(new Drawable.ColorDrawable(Color.TRANSPARENT));
+
+
+
 
   var talkWindow = new PopupWindow(screen,screenWidth, screenHeight / 3);
 
@@ -415,13 +601,17 @@ try{
   
   var arrowBitmap = new Bitmap.createScaledBitmap( new Bitmap.createBitmap(spritesheet,38,11,8,4), 32, 14, false);
   
-  var arrowWindow = new PopupWindow(32*2,14*2);
+  var b  = new Button(CTX);
+
   
-  arrowWindow.setBackgroundDrawable(new Drawable.ColorDrawable(Color.WHITE));
+ // b.setBackgroundDrawable(new Drawable.ColorDrawable(Color.WHITE));
 
-  //arrowWindow.setBackgroundDrawable(new Drawable.BitmapDrawable(arrowBitmap));
+ b.setBackgroundDrawable(new Drawable.BitmapDrawable(arrowBitmap));
 
-  arrowWindow.showAtLocation(CTX.getWindow().getDecorView(), Gravity.CENTER | Gravity.TOP, -20, 0);
+
+  var arrowWindow = new PopupWindow(b,32,14);
+
+  arrowWindow.showAtLocation(CTX.getWindow().getDecorView(), Gravity.BOTTOM | Gravity.RIGHT, dp(20), dp(12));
 
 
   var obj = {
@@ -510,7 +700,7 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
     var faceFile = blackRoom.getFaceByName(character[count]);
 
     var face = new Bitmap.createScaledBitmap(
-    faceFile, screenWidth / 5, screenHeight / 3, false);
+    faceFile, dp(250), dp(350), false);
 
     if (isLeft[count]) {
     	
@@ -593,9 +783,9 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
     })).start();
 
     screen.setOnClickListener(new View.OnClickListener({
-      onClick: function(viewarg) {
+      onClick: function(view) {
         try {
-
+                	 
           isChatOver = true;
 
           screen.setText(message[count]);
@@ -624,13 +814,14 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
 
             ModPE.setGameSpeed(20);
 
-            talkWin.talkWindow.dismiss();
+talkWin.personWindow1.dismiss();
+talkWin.personWindow2.dismiss();
+talkWin.nameWindow1.dismiss();
+talkWin.nameWindow2.dismiss();
+talkWin.talkWindow.dismiss();            
+talkWin.arrowWindow.dismiss();            
+
             
-            talkWin.arrowWindow.dismiss();
-            talkWin.nameWindow1.dismiss();
-            talkWin.nameWindow2.dismiss();
-            talkWin.personWindow1.dismiss();
-            talkWin.personWindow2.dismiss();
 
             isChatOver = false;
 
@@ -650,11 +841,16 @@ blackRoom.chat = function(talkWin, character, message, point, isLeft, color, doV
 };
 
 function useItem(x, y, z, I, b) {
+  
+  if(I==256)
+    blackRoom.screenVibrate(3000);
+  
+  if(I==257){  
   try {
 
-    var message = ["안녕 난 스켈레톤이야", "뭐 왜 뭘봐", "Most numbers typed in fail the test immediately, as most are not primes, and there is no problem with the response of the App. Likewise for small prime numbers, such as the eggshell number 77345993. (Why eggshell? Well if that number is typed into a desktop calculator with a Liquid Crystal Display, LCD, and the calculator is turned upside down then it sort of reads EGGSHELL.)\nNow try a really big prime number, a web search will reveal plenty, how about nineteen ones, 1111111111111111111, strangely this is a prime number. Notice that it takes a few seconds for the routine to determine that it is a prime number. If we add tv.setText(“Checking please wait.”) at the beginning of the CheckPrimeClick we get the same problem as our sleep example. The UI update is blocked by the looping code.", "(동공지진)"];
+    var message = ["안녕 난 스티브야", "뭐 왜 뭘봐", "Most numbers typed in fail the test immediately, as most are not primes, and there is no problem with the response of the App. Likewise for small prime numbers, such as the eggshell number 77345993. (Why eggshell? Well if that number is typed into a desktop calculator with a Liquid Crystal Display, LCD, and the calculator is turned upside down then it sort of reads EGGSHELL.)\nNow try a really big prime number, a web search will reveal plenty, how about nineteen ones, 1111111111111111111, strangely this is a prime number. Notice that it takes a few seconds for the routine to determine that it is a prime number. If we add tv.setText(“Checking please wait.”) at the beginning of the CheckPrimeClick we get the same problem as our sleep example. The UI update is blocked by the looping code.", "(동공지진)"];
 
-    var cha = ["Skeleton", "Zombie", "Skeleton", "Zombie"];
+    var cha = ["Steve", "Alex", "Steve", "Alex"];
 
     var point = [20, 25, 16, 25];
 
@@ -667,7 +863,8 @@ function useItem(x, y, z, I, b) {
     var endFunc = [
 
     null, null, function() {
-      clientMessage("yo");
+      
+      clientMessage("&");
     },
     null
 
@@ -690,7 +887,37 @@ function useItem(x, y, z, I, b) {
   } catch(e) {
     blackRoom.error(e);
   }
+  }
 
+
+if(I==258){
+blackRoom.screenDim(0.1);
+  }
+if(I==259){
+blackRoom.screenDim(1.0);
+  } 
+if(I==260){
+	
+var a =0;
+
+new java.lang.Thread(new java.lang.Runnable({run:function(){
+
+while(a<20){
+
+blackRoom.setBrightness(0.1);
+
+java.lang.Thread.sleep(100);
+
+blackRoom.setBrightness(1.0);
+a++;
+
+}
+
+}})).start();
+
+}   
+  
+     
 }
 
 
