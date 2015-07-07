@@ -375,14 +375,11 @@ blackRoom.vibrate = function(howLong) {
 blackRoom.screenVibrate = function(howLong) {
 
 try{
-
             
-//var view = CTX.getWindow().getDecorView().findViewById(android.R.id.content);
-
-//var view = CTX.getWindow().getDecorView().getRootView()
-
-
 /*
+var view = CTX.getWindow().getDecorView().findViewById(android.R.id.content);
+
+var view = CTX.getWindow().getDecorView().getRootView()
 
 var Animation = android.view.animation.Animation;
 
@@ -397,8 +394,7 @@ alphaAnimation.setRepeatCount(Animation.INFINITE);
 
 alphaAnimation.setRepeatMode(Animation.REVERSE);  
 
-view.startAnimation(alphaAnimation);  
-  
+view.startAnimation(alphaAnimation);    
 
 
 */
@@ -416,8 +412,8 @@ view.startAnimation(alphaAnimation);
  
     while(true){
       
-      var rand1 = Math.floor(Math.random()*20)-10;	
-      var rand2 = Math.floor(Math.random()*20)-10;	
+      var rand1 = Math.floor(Math.random()*10)-5;	
+      var rand2 = Math.floor(Math.random()*10)-5;	
 	    	  
      Entity.setRot(player,yaw+rand1,pitch+rand2);
      java.lang.Thread.sleep(50);
