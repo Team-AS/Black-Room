@@ -7,7 +7,7 @@
  * 
  */
 
-var SDCARD = android.os.Environment.getExternalStorageDirectory();
+var SDCARD = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
 var CTX = com.mojang.minecraftpe.MainActivity.currentMainActivity.get();
 
@@ -219,6 +219,134 @@ blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master
 blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/minecraft.ttf","/Team-AS/Black-Room/minecraft.ttf");
 
 blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/talking.9.png","/Team-AS/Black-Room/talking.9.png");
+
+
+
+
+/**
+ * Extract the given file to the directory
+ *
+ * orginal authors affogatoman, ChalkPE
+ *
+ * @param {String|File} file - zip 파일의 경로 혹은 파일 객체
+ * @param {String|File} target - 압축을 풀 폴더의 경로
+ */
+
+blackRoom.unZip = function(file, target) {
+	
+var time = new Date().getTime();
+	
+ new java.lang.Thread(new java.lang.Runnable({
+    run: function() { 	
+    try{
+        var zip = new java.util.zip.ZipFile(file);
+        var elements = zip.entries();
+        var element;
+        
+        var totalSize=0;
+        var progress = 0;
+        
+        while(elements.hasMoreElements()) {
+        totalSize += elements.nextElement().getSize();
+        
+        }
+        
+        var dialog;
+        
+        CTX.runOnUiThread(new java.lang.Runnable({
+    run: function(){
+      try{
+        dialog = new android.app.ProgressDialog(CTX);
+        dialog.setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setMax(totalSize);
+        dialog.setTitle("맵 자동적용");
+        dialog.setMessage("압축푸는 중...");
+        dialog.setCancelable(false);
+        dialog.show();
+      } catch(e){
+        blackRoom.error(e);
+      }
+    }
+  }));
+  
+        elements = zip.entries();            
+               
+        new java.io.File(target).mkdirs();
+        
+        while(elements.hasMoreElements()) {
+            element = elements.nextElement();
+            
+            CTX.runOnUiThread(new java.lang.Runnable({
+    run: function(){
+      try{
+      	
+      dialog.setMessage(element.getName()+" 압축 푸는 중...");
+      	
+      } catch(e){
+        blackRoom.error(e);
+      }
+    }
+  }));      
+            try{
+        
+        var bis = null;
+        
+        
+        var source = zip.getInputStream(element);
+        
+        var target2 = new java.io.File(target, element.getName())
+         
+            bis = new java.io.BufferedInputStream(source);
+       
+        if(element.isDirectory( ) ) {
+        target2.mkdir();
+        }
+        else{
+        	target2.getParentFile().mkdir();
+        	 
+        var bos = new java.io.BufferedOutputStream(new java.io.FileOutputStream(target2));
+        
+        var buf = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, 4096);
+        var count = 0;
+        
+        while((count = bis.read(buf)) >= 0){
+            bos.write(buf, 0, count);
+            progress += count;
+            dialog.setProgress(progress);
+        }
+        
+        bis.close();
+        bos.close();
+     }           
+        
+    }catch(e){
+blackRoom.error(e);        
+    }
+
+        }
+        zip.close();
+        
+        clientMessage("End");
+        
+        clientMessage("unzip1 extract ended. Took "+ (new Date().getTime()-time)+"millisec");
+	
+        
+    }catch(e){
+        blackRoom.error(e);
+    }
+    }})).start();
+
+
+
+};
+
+
+
+
+
+
+
+
 
 
 
@@ -807,7 +935,16 @@ if(I==260){
 blackRoom.setBrightness(0.1);
 }   
   
+if(I == 261){
+
+blackRoom.unZip(
+SDCARD+"/Download/aa/test.zip", 
+SDCARD+"/games/com.mojang/minecraftWorlds"
+);
      
+}
+
+
 }
 
 
@@ -826,4 +963,9 @@ blackRoom.setBrightness(0.1);
 
 
 
+ 	
+ 	
+ 	
+ 	
+ 	
  	
