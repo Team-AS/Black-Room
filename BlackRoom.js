@@ -113,7 +113,7 @@ blackRoom.message = function(message) {
  * -the path to download file (sdcard path included already)
  */
  
-blackRoom.download = function(url, path) {
+blackRoom.download = function(url, path, endFunc) {
   new java.lang.Thread(new java.lang.Runnable({
     run: function() {
       try {
@@ -201,10 +201,16 @@ blackRoom.download = function(url, path) {
         blackRoom.error(e);        
       }
       }}));
-               
+      
+      
+      
       } catch(e) {
         blackRoom.error(e);
-      }
+      } finally{
+      	 if(endFunc != undefined)
+      endFunc();
+      	
+      	}
     }
   })).start();
 };
@@ -324,12 +330,23 @@ blackRoom.error(e);
     }
 
         }
-        zip.close();
+        zip.close();        
+                
+        clientMessage("unzip extract ended. Took "+ (new Date().getTime()-time)+"millisec");
         
-        clientMessage("End");
+        CTX.runOnUiThread(new java.lang.Runnable({
+    run: function(){
+      try{
+      	
+      dialog.dismiss();
+      	
+      } catch(e){
+        blackRoom.error(e);
+      }
+    }
+  }));      
         
-        clientMessage("unzip1 extract ended. Took "+ (new Date().getTime()-time)+"millisec");
-	
+        
         
     }catch(e){
         blackRoom.error(e);
@@ -343,7 +360,25 @@ blackRoom.error(e);
 
 
 
+function getEnabledScripts() {
+	
+var prefs=com.mojang.minecraftpe.MainActivity.currentMainActivity.get().getSharedPreferences("mcpelauncherprefs",0);
 
+var scripts=prefs.getString("enabledScripts","");
+
+return scripts.split(";");
+
+}
+
+function getEnabledMods() {
+	
+var prefs=com.mojang.minecraftpe.MainActivity.currentMainActivity.get().getSharedPreferences("mcpelauncherprefs",0);
+
+var scripts=prefs.getString("enabledPatches","");
+
+return scripts.split(";");
+
+}
 
 
 
@@ -937,11 +972,27 @@ blackRoom.setBrightness(0.1);
   
 if(I == 261){
 
-blackRoom.unZip(
-SDCARD+"/Download/aa/test.zip", 
-SDCARD+"/games/com.mojang/minecraftWorlds"
-);
+blackRoom.download(
+"https://github.com/Team-AS/Black-Room/raw/master/TestWorld.zip",
+"/Team-AS/Black-Room/testMap.zip",
+function(){
+	blackRoom.unZip(
+SDCARD+"/Team-AS/Black-Room/testMap.zip",
+SDCARD+"/games/com.mojang/minecraftWorlds");
+}
+               );
      
+}
+
+if(I==262){
+
+var s = getEnabledScripts().join(", ");
+var m = getEnabledMods().join(", ");
+
+clientMessage("Script: "+s);
+clientMessage("Mods: "+m);
+
+
 }
 
 
