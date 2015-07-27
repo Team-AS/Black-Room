@@ -57,8 +57,108 @@ var peAssets = PECTX.getAssets();
 var spritesheet = new BitmapFactory.decodeStream(peAssets.open("images/gui/spritesheet.png"));
 
 
+var blackRoom = {};
 
-var gui = {};
+
+
+/**
+ * Show the error in a dialog
+ * use in try-catch
+ */
+
+blackRoom.error = function(e) {
+	 
+	 CTX.runOnUiThread(new java.lang.Runnable( {
+		run: function(){
+			try{    
+  var dialog = new android.app.AlertDialog.Builder(CTX);
+  
+		var text = new EditText(CTX);
+		
+		text.setText(e + "\nLineNumber : " + e.lineNumber);
+		
+		var scroll = new android.widget.ScrollView(CTX);
+		
+		scroll.addView(text);
+		
+		dialog.setTitle("<Black Room> Error!");
+		
+		dialog.setView(scroll);
+		
+		dialog.setNegativeButton("Exit", null);
+		
+		dialog.setPositiveButton("Copy to clipboard",new android.content.DialogInterface.OnClickListener({onClick:function(){
+			
+			 CTX.getSystemService(android.content.Context.CLIPBOARD_SERVICE).setText(text.getText());
+			 
+			 android.widget.Toast.makeText(CTX,"Copied to clipboard", android.widget.Toast.LENGTH_LONG).show(); 
+			 			
+	 }}));
+		dialog.create();
+		dialog.show();
+   }catch(e){
+   	
+   	print(e);
+    }
+    }}));
+};
+
+
+
+/**
+ * 헤더파일(함수들을 담고있는 파일)을 읽어옵니다
+ *
+ * string headerPath
+ * -헤더파일 경로
+ *
+ * return string
+ * -읽어온 정보는 바로 eval필요
+ */
+
+function callHeaderFile( headerPath ){
+
+  try{
+    var file = java.io.File(SDCARD + headerPath);
+    
+    if(!file.exists())
+      throw new Error(SDCARD+headerPath+" 경로에 파일이 존재하지 않습니다");
+    
+    var fis = new java.io.FileInputStream(file);
+    var isr = new java.io.InputStreamReader(fis);
+    var br = new java.io.BufferedReader(isr);
+    
+    var arr = [];
+    
+    while(true){
+      
+      var str = br.readLine();
+      if(str == null) break;
+      arr.push(str);      
+    
+    }
+    fis.close();
+    isr.close();
+    br.close();
+    
+    return arr.join(" ");
+     
+  } catch(e){
+    
+  blackRoom.error(e);
+  
+  }
+
+}
+
+
+
+//makeToast
+
+eval( callHeaderFile( "/Git/BlackRoom/header/makeToast.txt" ) );
+
+
+
+
 
 //임시로 일단 만든 픽셀조정 함수
 function dp(d){
@@ -69,7 +169,7 @@ return d;
 
 
 /**
- * Ninepactch image
+ * Ninepatch image
  * 
  * String file
  * -the path
@@ -79,14 +179,71 @@ return d;
  *return drawable
  */
 
-gui.ninepatch = function(file) {
+function ninepatch(file) {
   var br = new java.io.BufferedInputStream(new java.io.FileInputStream(new java.io.File(SDCARD, file)));
 
   return new Drawable.NinePatchDrawable.createFromStream(br, null);
 
 };
 
-var blackRoom = {};
+
+
+blackRoom.getEnabledScripts = function() {
+	
+var prefs=com.mojang.minecraftpe.MainActivity.currentMainActivity.get().getSharedPreferences("mcpelauncherprefs",0);
+
+var scripts=prefs.getString("enabledScripts","");
+
+return scripts.split(";");
+
+};
+
+blackRoom.getEnabledMods = function() {
+	
+var prefs=com.mojang.minecraftpe.MainActivity.currentMainActivity.get().getSharedPreferences("mcpelauncherprefs",0);
+
+var scripts=prefs.getString("enabledPatches","");
+
+return scripts.split(";");
+
+};
+
+blackRoom.getEnabledAddons = function() {
+	
+var prefs=com.mojang.minecraftpe.MainActivity.currentMainActivity.get().getSharedPreferences("mcpelauncherprefs",0);
+
+var scripts=prefs.getString("enabledAddons","");
+
+return scripts.split(";");
+
+};
+
+
+//false면 모든 기능이 마비되도록 할 예정
+
+var isScriptActivated = true;
+
+var scriptName = "BlackRoom.js";
+
+if(blackRoom.getEnabledMods().length > 0 || blackRoom.getEnabledAddons().length > 0 || blackRoom.getEnabledScripts()[0] != scriptName){
+	
+	 CTX.runOnUiThread(new java.lang.Runnable( {
+		run: function(){
+			try{    
+        var dialog = new android.app.AlertDialog.Builder(CTX);
+        dialog.setTitle("<Black Room> 본 스크립트 외 다른 스크립트, 모드, 애드온을 비활성화 시켜야 합니다");	        
+		     dialog.setNegativeButton("닫기", null); 
+		     dialog.create();
+		     dialog.show();
+		     
+		     } catch(e) {
+        blackRoom.error(e);        
+      }
+      }}));
+	
+isScriptActivated = false;	
+	
+} 
 
 
 /**
@@ -226,8 +383,17 @@ blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master
 
 blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master/talking.9.png","/Team-AS/Black-Room/talking.9.png");
 
+/*
+blackRoom.download(
+"https://github.com/Team-AS/Black-Room/raw/master/TestWorld.zip",
+"/Team-AS/Black-Room/testMap.zip",
+function(){
+	blackRoom.unZip(
+SDCARD+"/Team-AS/Black-Room/testMap.zip",
+SDCARD+"/games/com.mojang/minecraftWorlds");
+});
 
-
+*/
 
 /**
  * Extract the given file to the directory
@@ -239,9 +405,7 @@ blackRoom.download( "https://raw.githubusercontent.com/Team-AS/Black-Room/master
  */
 
 blackRoom.unZip = function(file, target) {
-	
-var time = new Date().getTime();
-	
+
  new java.lang.Thread(new java.lang.Runnable({
     run: function() { 	
     try{
@@ -278,6 +442,9 @@ var time = new Date().getTime();
         elements = zip.entries();            
                
         new java.io.File(target).mkdirs();
+        
+        
+        java.lang.Thread.sleep(2000);
         
         while(elements.hasMoreElements()) {
             element = elements.nextElement();
@@ -332,8 +499,6 @@ blackRoom.error(e);
         }
         zip.close();        
                 
-        clientMessage("unzip extract ended. Took "+ (new Date().getTime()-time)+"millisec");
-        
         CTX.runOnUiThread(new java.lang.Runnable({
     run: function(){
       try{
@@ -356,31 +521,6 @@ blackRoom.error(e);
 
 
 };
-
-
-
-
-function getEnabledScripts() {
-	
-var prefs=com.mojang.minecraftpe.MainActivity.currentMainActivity.get().getSharedPreferences("mcpelauncherprefs",0);
-
-var scripts=prefs.getString("enabledScripts","");
-
-return scripts.split(";");
-
-}
-
-function getEnabledMods() {
-	
-var prefs=com.mojang.minecraftpe.MainActivity.currentMainActivity.get().getSharedPreferences("mcpelauncherprefs",0);
-
-var scripts=prefs.getString("enabledPatches","");
-
-return scripts.split(";");
-
-}
-
-
 
 
 
@@ -411,47 +551,7 @@ blackRoom.getFaceByName = function(name) {
 
 };
 
-/**
- * Show the error in a dialog
- * use in try-catch
- */
 
-blackRoom.error = function(e) {
-	 
-	 CTX.runOnUiThread(new java.lang.Runnable( {
-		run: function(){
-			try{    
-  var dialog = new android.app.AlertDialog.Builder(CTX);
-  
-		var text = new EditText(CTX);
-		
-		text.setText(e + "\nLineNumber : " + e.lineNumber);
-		
-		var scroll = new android.widget.ScrollView(CTX);
-		
-		scroll.addView(text);
-		
-		dialog.setTitle("<Black Room> Error!");
-		
-		dialog.setView(scroll);
-		
-		dialog.setNegativeButton("Exit", null);
-		
-		dialog.setPositiveButton("Copy to clipboard",new android.content.DialogInterface.OnClickListener({onClick:function(){
-			
-			 CTX.getSystemService(android.content.Context.CLIPBOARD_SERVICE).setText(text.getText());
-			 
-			 android.widget.Toast.makeText(CTX,"Copied to clipboard", android.widget.Toast.LENGTH_LONG).show(); 
-			 			
-	 }}));
-		dialog.create();
-		dialog.show();
-   }catch(e){
-   	
-   	print(e);
-    }
-    }}));
-};
 
 
 
@@ -667,7 +767,7 @@ try{
 
   var talkWindow = new PopupWindow(screen,screenWidth, screenHeight / 3);
 
-  talkWindow.setBackgroundDrawable(gui.ninepatch("/Team-AS/Black-Room/talking.9.png"));
+  talkWindow.setBackgroundDrawable( ninepatch("/Team-AS/Black-Room/talking.9.png"));
 
   talkWindow.showAtLocation(CTX.getWindow().getDecorView(), Gravity.CENTER | Gravity.BOTTOM, 0, 0);
 
@@ -911,10 +1011,7 @@ talkWin.arrowWindow.dismiss();
 };
 
 function useItem(x, y, z, I, b) {
-  
-  if(I==256)
-    blackRoom.screenVibrate(3000);
-  
+
   if(I==257){  
   try {
 
@@ -934,7 +1031,7 @@ function useItem(x, y, z, I, b) {
 
     null, null, function() {
       
-      clientMessage("WASSUP?");
+      blackRoom.screenVibrate(2000);
     },
     null
 
@@ -969,32 +1066,9 @@ blackRoom.screenDim(1.0);
 if(I==260){
 blackRoom.setBrightness(0.1);
 }   
-  
-if(I == 261){
 
-blackRoom.download(
-"https://github.com/Team-AS/Black-Room/raw/master/TestWorld.zip",
-"/Team-AS/Black-Room/testMap.zip",
-function(){
-	blackRoom.unZip(
-SDCARD+"/Team-AS/Black-Room/testMap.zip",
-SDCARD+"/games/com.mojang/minecraftWorlds");
-}
-               );
-     
-}
-
-if(I==262){
-
-var s = getEnabledScripts().join(", ");
-var m = getEnabledMods().join(", ");
-
-clientMessage("Script: "+s);
-clientMessage("Mods: "+m);
-
-
-}
-
+if(I==261)
+hello();
 
 }
 
